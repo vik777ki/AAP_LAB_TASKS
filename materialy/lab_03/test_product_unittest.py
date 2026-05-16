@@ -4,65 +4,59 @@
 Uruchomienie: python -m unittest test_product_unittest -v
 """
 
+# test_product_unittest.py
 import unittest
 from product import Product
 
-
 class TestProduct(unittest.TestCase):
-
+    
     def setUp(self):
-        """Przygotuj instancje Product do testow."""
-        # TODO: Stworz instancje Product, np. Product("Laptop", 2999.99, 10)
-        pass
+        # Ta metoda odpala się przed każdym pojedynczym testem
+        self.product = Product("Klawiatura mechaniczna", 350.50, 10)
 
-    # --- Testy add_stock ---
+    def test_init_valid_values(self):
+        self.assertEqual(self.product.name, "Klawiatura mechaniczna")
+        self.assertEqual(self.product.price, 350.50)
+        self.assertEqual(self.product.quantity, 10)
 
-    def test_add_stock_positive(self):
-        """Sprawdz, czy dodanie towaru zwieksza quantity."""
-        # TODO: Wywolaj add_stock i sprawdz nowa wartosc quantity
-        pass
+    def test_init_negative_price_raises_error(self):
+        with self.assertRaises(ValueError):
+            Product("Myszka", -50.0, 5)
 
-    def test_add_stock_negative_raises(self):
-        """Sprawdz, czy ujemna wartosc rzuca ValueError."""
-        # TODO: Uzyj self.assertRaises(ValueError) i wywolaj add_stock z ujemna wartoscia
-        pass
+    def test_init_negative_quantity_raises_error(self):
+        with self.assertRaises(ValueError):
+            Product("Monitor", 1200.0, -1)
 
-    # --- Testy remove_stock ---
+    def test_add_stock_valid(self):
+        self.product.add_stock(5)
+        self.assertEqual(self.product.quantity, 15)
 
-    def test_remove_stock_positive(self):
-        """Sprawdz, czy usuniecie towaru zmniejsza quantity."""
-        # TODO: Wywolaj remove_stock i sprawdz nowa wartosc quantity
-        pass
+    def test_add_stock_negative_raises_error(self):
+        with self.assertRaises(ValueError):
+            self.product.add_stock(-2)
 
-    def test_remove_stock_too_much_raises(self):
-        """Sprawdz, czy proba usuniecia wiecej niz jest dostepne rzuca ValueError."""
-        # TODO: Uzyj self.assertRaises(ValueError)
-        pass
+    def test_remove_stock_valid(self):
+        self.product.remove_stock(3)
+        self.assertEqual(self.product.quantity, 7)
 
-    def test_remove_stock_negative_raises(self):
-        """Sprawdz, czy ujemna wartosc rzuca ValueError."""
-        # TODO: Uzyj self.assertRaises(ValueError)
-        pass
+    def test_remove_stock_negative_raises_error(self):
+        with self.assertRaises(ValueError):
+            self.product.remove_stock(-5)
 
-    # --- Testy is_available ---
+    def test_remove_stock_too_much_raises_error(self):
+        with self.assertRaises(ValueError):
+            self.product.remove_stock(20)
 
-    def test_is_available_when_in_stock(self):
-        """Sprawdz, czy produkt z quantity > 0 jest dostepny."""
-        # TODO: Uzyj self.assertTrue
-        pass
+    def test_is_available_true(self):
+        self.assertTrue(self.product.is_available())
 
-    def test_is_not_available_when_empty(self):
-        """Sprawdz, czy produkt z quantity == 0 nie jest dostepny."""
-        # TODO: Stworz produkt z quantity=0 i uzyj self.assertFalse
-        pass
-
-    # --- Testy total_value ---
+    def test_is_available_false(self):
+        self.product.remove_stock(10)
+        self.assertFalse(self.product.is_available())
 
     def test_total_value(self):
-        """Sprawdz, czy total_value zwraca price * quantity."""
-        # TODO: Uzyj self.assertEqual
-        pass
+        expected_value = 350.50 * 10
+        self.assertEqual(self.product.total_value(), expected_value)
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()
